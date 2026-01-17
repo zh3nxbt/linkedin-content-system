@@ -19,7 +19,7 @@ Build a repeatable LinkedIn content system for MAS Precision Parts that captures
 
 ## Non-Goals
 - No paid ads or automated DMs in this phase.
-- No scraping or use of private data.
+- No scraping of private data or bypassing access controls.
 - Not aiming to replace sales outreach; this is brand + inbound support.
 
 ## Audience
@@ -51,6 +51,98 @@ Secondary:
 - Tooling upgrades, maintenance wins, QC improvements
 - Employee spotlights and safety wins
 - Customer value stories (anonymized)
+ - Public LinkedIn creator posts for benchmarking (public content only, optional)
+
+## Technical Objectives
+- Create a repeatable pipeline that turns raw inputs into approved LinkedIn posts.
+- Maintain a structured content database for analysis and reuse.
+- Support automated benchmarking of public LinkedIn posts to extract patterns.
+- Enable prompt-driven post creation with QA checks and compliance gates.
+
+## System Architecture (high level)
+1) Source capture (shop + public benchmarks)
+2) Ingestion and normalization (Apify + manual input)
+3) Analysis layer (Claude + spreadsheets)
+4) Content generation (Claude skills + templates)
+5) Human review and approval (internal)
+6) Scheduling and publishing (LinkedIn)
+7) Measurement and feedback loop
+
+## System Components (tools + role)
+### 1) Source Capture
+- Shop assets: photos, short clips, job notes, inspection images.
+- Public benchmark data: Top creators in machining/manufacturing on LinkedIn.
+
+### 2) Data Ingestion (Apify)
+- Tool: Apify LinkedIn Post Search Scraper.
+- Scope: public posts from a curated list of 10–20 relevant creators.
+- Config: cookies, user agent, source URLs, rate limits.
+- Output: JSON or CSV of post text, media type, engagement, date, author.
+
+### 3) Analysis (Claude)
+- Upload scraped dataset (CSV/JSON) to Claude.
+- Ask for pattern analysis (hooks, length, CTA usage, formatting, media type).
+- Output: pattern report and ranked post examples.
+
+### 4) Generation (Claude skills)
+Create two internal skills:
+- `linkedin-hook-writer`: generates hooks based on validated formulas.
+- `linkedin-post-writer`: generates full posts from MAS templates and facts.
+
+Optional third skill:
+- `brand-voice-skill`: rewrites posts to match MAS tone and constraints.
+
+### 5) Review + Publish
+- Human review for accuracy and NDA compliance.
+- Schedule via LinkedIn native scheduler or Buffer.
+- Track results by pillar and template.
+
+## Data Model (minimum)
+Store in Google Sheet or Airtable:
+- Post ID
+- Date
+- Pillar
+- Template
+- Hook formula
+- Topic
+- CTA type
+- Media type
+- Word/character count
+- Source asset link
+- Status (draft/review/approved/published)
+- Performance metrics (impressions, reactions, comments, CTR)
+
+## Technical Workflow (step-by-step)
+Step 1) Benchmark setup (monthly or quarterly)
+- Build a list of 10–20 public LinkedIn creators in machining/manufacturing.
+- Run Apify scraper with 900–1500 posts total.
+- Export dataset to CSV.
+
+Step 2) Pattern analysis
+- Upload CSV to Claude with analysis prompt.
+- Produce a pattern report: media mix, length, structure, CTA usage.
+- Extract top hooks and top post templates.
+
+Step 3) Template + prompt bank
+- Convert insights into 6–8 MAS-specific templates.
+- Save prompts and examples in `devDocs/prompts.md`.
+
+Step 4) Weekly content intake
+- 30–45 min capture of shop highlights.
+- Add to content tracker with asset links and notes.
+
+Step 5) Draft generation
+- Run `linkedin-hook-writer` for 3–5 hooks per topic.
+- Run `linkedin-post-writer` for full posts.
+- Apply `brand-voice-skill` for final polish.
+
+Step 6) QA + compliance
+- Check NDA, accuracy, tolerances, materials, and lead times.
+- Ensure no customer names, drawings, or proprietary parts are exposed.
+
+Step 7) Publish + measure
+- Post 3–5x/week.
+- Track results and refine templates monthly.
 
 ## Content Pillars
 1) Capability and process
@@ -82,17 +174,28 @@ Secondary:
 - Quick tip for engineers/procurement
 
 ## Tools and Assets
-- Content tracker (Google Sheet)
+- Content tracker (Google Sheet or Airtable)
 - Asset library (photos, short clips)
 - Template bank (md file)
 - Prompt library (for drafting)
 - Monthly report template
 - Company fact sheet (validated from the website)
+ - Apify actor configuration (cookies, user-agent, rate limits)
+ - Claude analysis prompt + report template
+ - Claude skills: hook writer, post writer, brand voice
+ - Example output library (best-performing posts + annotated breakdowns)
+
+## Prompt Requirements (starter)
+- Inputs: topic, pillar, template, target reader, asset description, CTA.
+- Outputs: 1 hook + full post (900–1,700 characters).
+- Formatting: short paragraphs, optional arrows (→, ↳), clear CTA.
+- Constraints: no customer names, no proprietary details, no overclaims.
 
 ## Compliance and Risk
 - No sharing of customer names, drawings, or proprietary parts.
 - Verify claims (tolerances, materials, lead time) before posting.
 - Follow LinkedIn platform policies and internal NDA requirements.
+ - Apify scraping limited to public content and compliant usage.
 
 ## Phases and Timeline
 Phase 1 (Week 1-2):
@@ -116,6 +219,9 @@ Phase 3 (Week 7-12):
 - `devDocs/prompts.md` (prompt library)
 - `devDocs/content_tracker.csv` (starter tracker)
 - `devDocs/sop.md` (step-by-step operating procedure)
+ - `devDocs/analysis_report_template.md` (pattern report format)
+ - `devDocs/apify_config.md` (scraper config and inputs)
+ - `devDocs/skills_spec.md` (Claude skills requirements)
 
 ## Open Questions
 - Who approves posts and how fast can approval happen?
@@ -124,6 +230,9 @@ Phase 3 (Week 7-12):
 - Can we post customer outcomes if anonymized?
 - Who will be the internal owner of the weekly intake?
 - Can we validate the company snapshot and industry list against the website?
+ - Do we want Apify used monthly or quarterly for benchmarking?
+ - Which 10–20 public creators should be included in the benchmark list?
+ - Where should the content database live (Sheets vs Airtable)?
 
 ## Next Steps
 - Confirm objectives and success metrics.

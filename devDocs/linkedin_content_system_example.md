@@ -1,3 +1,5 @@
+https://x.com/GanimCorey/status/2011883074963808258
+
 I gave this post to Claude and asked it to build me a step by step implementation plan.
 
 2 hours later, I have a turn key LinkedIn content machine.
