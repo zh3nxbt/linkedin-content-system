@@ -51,7 +51,12 @@ Secondary:
 - Tooling upgrades, maintenance wins, QC improvements
 - Employee spotlights and safety wins
 - Customer value stories (anonymized)
- - Public LinkedIn creator posts for benchmarking (public content only, optional)
+- Public LinkedIn creator posts for benchmarking (public content only, optional)
+
+## Asset-First Rule
+- Posts should be drafted from pre-captured assets and notes in the content tracker.
+- The LLM generates copy; it does not invent technical details.
+- Exceptions: text-only posts (tips, explainers, procurement guidance) must be tagged as "no asset" and avoid specific claims.
 
 ## Technical Objectives
 - Create a repeatable pipeline that turns raw inputs into approved LinkedIn posts.
@@ -122,6 +127,7 @@ Step 2) Pattern analysis
 - Upload CSV to Claude with analysis prompt.
 - Produce a pattern report: media mix, length, structure, CTA usage.
 - Extract top hooks and top post templates.
+ - Save summary stats and examples in the analysis report template.
 
 Step 3) Template + prompt bank
 - Convert insights into 6–8 MAS-specific templates.
